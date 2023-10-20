@@ -1,0 +1,124 @@
+//upper main [r - 1][c]
+        if (status[r - 1][c] == unused && r - 1 - 1 != -1) {
+          int min = infinity;
+          // upper [r - 1 - 1][c]
+          if (status[r - 1 - 1][c] != unused &&
+              value[r - 1][c] + value[r - 1 - 1][c] < min) {
+            parentNode[r - 1 - 1][c] = "$r $c";
+            min = value[r - 1][c] + value[r - 1 - 1][c];
+          }
+          // left [r][c - 1]
+          if (status[r][c - 1] != unused &&
+              value[r - 1][c] + value[r][c - 1] < min) {
+            parentNode[r][c - 1] = "$r $c";
+            min = value[r - 1][c] + value[r][c - 1];
+          }
+          // right [r - 1][c + 1]
+          if (status[r - 1][c + 1] != unused &&
+              value[r - 1][c] + value[r - 1][c + 1] < min) {
+            parentNode[r - 1][c] = "$r $c";
+            min = value[r - 1][c] + value[r - 1][c + 1];
+          }
+          if (r - 1 != -1) {
+            tmpopens.add([r - 1, c]);
+          }
+          value[r - 1][c] = min;
+          status[r - 1][c] = open;
+          color[r - 1][c] = border;
+          if (endPosition![0] == r - 1 && endPosition![1] == c) {
+            arrived = true;
+          }
+        }
+        // bottom main [r + 1][c]
+        if (status[r + 1][c] == unused && r + 2 != row) {
+          int min = infinity;
+          // left [r + 1][c - 1]
+          if (status[r + 1][c - 1] != unused &&
+              value[r + 1][c] + value[r + 1][c - 1] < min) {
+            min = value[r + 1][c] + value[r + 1][c - 1];
+            parentNode[r + 1][c - 1] = "$r $c";
+          }
+          // right [r + 1][c + 1]
+          if (status[r + 1][c + 1] != unused &&
+              value[r + 1][c] + value[r + 1][c + 1] < min) {
+            min = value[r + 1][c] + value[r + 1][c + 1];
+            parentNode[r + 1][c + 1] = "$r $c";
+          }
+          // bottom [r + 1 + 1][c]
+          if (status[r + 1 + 1][c] != unused &&
+              value[r + 1][c] + value[r + 1 + 1][c] < min) {
+            min = value[r + 1][c] + value[r + 1 + 1][c];
+            parentNode[r + 1 + 1][c] = "$r $c";
+          }
+          value[r + 1][c] = min;
+          status[r + 1][c] = open;
+          color[r + 1][c] = border;
+          if (endPosition![0] == r + 1 && endPosition![1] == c) {
+            arrived = true;
+          }
+          if (r + 1 != row) {
+            tmpopens.add([r + 1, c]);
+          }
+        }
+        // Right main [r][c + 1]
+        if (status[r][c + 1] == unused && c + 2 != col) {
+          int min = infinity;
+          // right [r][c + 1 + 1]
+          if (status[r][c + 1 + 1] != unused &&
+              value[r][c + 1] + value[r][c + 1 + 1] < min) {
+            min = value[r][c + 1] + value[r][c + 1 + 1];
+            parentNode[r][c + 1 + 1] = "$r $c";
+          }
+          // upper [r - 1][c + 1]
+          if (status[r - 1][c + 1] != unused &&
+              value[r][c + 1] + value[r - 1][c + 1] < min) {
+            min = value[r][c + 1] + value[r - 1][c + 1];
+            parentNode[r - 1][c + 1] = "$r $c";
+          }
+          // bottom [r + 1][c + 1]
+          if (status[r + 1][c + 1] != unused &&
+              value[r][c + 1] + value[r + 1][c + 1] < min) {
+            min = value[r][c + 1] + value[r + 1][c + 1];
+            parentNode[r + 1][c + 1] = "$r $c";
+          }
+          value[r][c + 1] = min;
+          status[r][c + 1] = open;
+          color[r][c + 1] = border;
+          if (endPosition![0] == r && endPosition![1] == c + 1) {
+            arrived = true;
+          }
+          if (c + 1 != col) {
+            tmpopens.add([r, c + 1]);
+          }
+        }
+        // left main [r][c - 1]
+        if (status[r][c - 1] == unused && c - 1 - 1 != 0) {
+          int min = infinity;
+          // left [r][c - 1 - 1]
+          if (status[r][c - 1 - 1] != unused &&
+              value[r][c - 1] + value[r][c - 1 - 1] < min) {
+            min = value[r][c - 1] + value[r][c - 1 - 1];
+            parentNode[r][c - 1 - 1] = "$r $c";
+          }
+          // upper [r - 1][c - 1]
+          if (status[r - 1][c - 1] != unused &&
+              value[r][c - 1] + value[r - 1][c - 1] < min) {
+            min = value[r][c - 1] + value[r - 1][c - 1];
+            parentNode[r - 1][c - 1] = "$r $c";
+          }
+          // bottom [r + 1][c - 1]
+          if (status[r + 1][c - 1] != unused &&
+              value[r][c - 1] + value[r + 1][c - 1] < min) {
+            min = value[r][c - 1] + value[r + 1][c - 1];
+            parentNode[r + 1][c - 1] = "$r $c";
+          }
+          value[r][c - 1] = min;
+          status[r][c - 1] = open;
+          color[r][c - 1] = border;
+          if (endPosition![0] == r && endPosition![1] == c - 1) {
+            arrived = true;
+          }
+          if (c - 1 != -1) {
+            tmpopens.add([r, c - 1]);
+          }
+        }

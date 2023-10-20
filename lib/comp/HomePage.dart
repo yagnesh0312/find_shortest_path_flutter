@@ -1,3 +1,4 @@
+import 'package:find_shortest_path/comp/Node.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -11,6 +12,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int row = 32;
   int col = 50;
+  final increase = 1;
   final infinity = 99999;
   final start = "start";
   final end = "end";
@@ -26,10 +28,8 @@ class _HomeState extends State<Home> {
   var parentNode;
   var status;
   late List<List<int>> opens;
-  Color border = Colors.yellowAccent;
-  Color fill = Colors.yellow;
-  
-  List<List<int>>? close;
+
+  late List<List<int>> barrierList;
   List<int>? endPosition;
   @override
   void initState() {
@@ -51,6 +51,7 @@ class _HomeState extends State<Home> {
         (i) => List<String>.generate(col, (index) => unused, growable: false),
         growable: false);
     opens = [];
+    barrierList = [];
   }
 
   void play() async {
@@ -62,143 +63,100 @@ class _HomeState extends State<Home> {
     bool arrived = false;
     while (!arrived) {
       tmpopens = [];
+      // print("not Arrived");
       for (var i = 0; i < opens.length; i++) {
         r = opens[i][0];
         c = opens[i][1];
         print("$r = ${endPosition![0]} and $c = ${endPosition![1]}");
-
-        //upper main [r - 1][c]
-        if (status[r - 1][c] == unused && r - 1 - 1 != -1) {
-          int min = infinity;
-          // upper [r - 1 - 1][c]
-          if (status[r - 1 - 1][c] != unused &&
-              value[r - 1][c] + value[r - 1 - 1][c] < min) {
-            parentNode[r - 1 - 1][c] = "$r $c";
-            min = value[r - 1][c] + value[r - 1 - 1][c];
-          }
-          // left [r][c - 1]
-          if (status[r][c - 1] != unused &&
-              value[r - 1][c] + value[r][c - 1] < min) {
-            parentNode[r][c - 1] = "$r $c";
-            min = value[r - 1][c] + value[r][c - 1];
-          }
-          // right [r - 1][c + 1]
-          if (status[r - 1][c + 1] != unused &&
-              value[r - 1][c] + value[r - 1][c + 1] < min) {
-            parentNode[r - 1][c] = "$r $c";
-            min = value[r - 1][c] + value[r - 1][c + 1];
-          }
-          if (r - 1 != -1) {
-            tmpopens.add([r - 1, c]);
-          }
-          value[r - 1][c] = min;
-          status[r - 1][c] = open;
-          color[r - 1][c] = border;
-          if (endPosition![0] == r - 1 && endPosition![1] == c) {
-            arrived = true;
-          }
+        if (r == endPosition![0] && c == endPosition![1]) {
+          arrived = true;
+          break;
+        }
+        int min = infinity;
+        // edited here
+        // set open Value
+        // upper main [r - 1][c]
+        print(status[r - 1][c]);
+        if (status[r - 1][c] != unused && value[r - 1][c] + increase < min) {
+          print("upper");
+          min = value[r - 1][c] + increase;
         }
         // bottom main [r + 1][c]
-        if (status[r + 1][c] == unused && r + 2 != row) {
-          int min = infinity;
-          // left [r + 1][c - 1]
-          if (status[r + 1][c - 1] != unused &&
-              value[r + 1][c] + value[r + 1][c - 1] < min) {
-            min = value[r + 1][c] + value[r + 1][c - 1];
-            parentNode[r + 1][c - 1] = "$r $c";
-          }
-          // right [r + 1][c + 1]
-          if (status[r + 1][c + 1] != unused &&
-              value[r + 1][c] + value[r + 1][c + 1] < min) {
-            min = value[r + 1][c] + value[r + 1][c + 1];
-            parentNode[r + 1][c + 1] = "$r $c";
-          }
-          // bottom [r + 1 + 1][c]
-          if (status[r + 1 + 1][c] != unused &&
-              value[r + 1][c] + value[r + 1 + 1][c] < min) {
-            min = value[r + 1][c] + value[r + 1 + 1][c];
-            parentNode[r + 1 + 1][c] = "$r $c";
-          }
-          value[r + 1][c] = min;
-          status[r + 1][c] = open;
-          color[r + 1][c] = border;
-          if (endPosition![0] == r + 1 && endPosition![1] == c) {
-            arrived = true;
-          }
-          if (r + 1 != row) {
-            tmpopens.add([r + 1, c]);
-          }
+        else if (status[r + 1][c] != unused &&
+            value[r + 1][c] + increase < min) {
+          print("bottom");
+          min = value[r + 1][c] + increase;
         }
         // Right main [r][c + 1]
-        if (status[r][c + 1] == unused && c + 2 != col) {
-          int min = infinity;
-          // right [r][c + 1 + 1]
-          if (status[r][c + 1 + 1] != unused &&
-              value[r][c + 1] + value[r][c + 1 + 1] < min) {
-            min = value[r][c + 1] + value[r][c + 1 + 1];
-            parentNode[r][c + 1 + 1] = "$r $c";
-          }
-          // upper [r - 1][c + 1]
-          if (status[r - 1][c + 1] != unused &&
-              value[r][c + 1] + value[r - 1][c + 1] < min) {
-            min = value[r][c + 1] + value[r - 1][c + 1];
-            parentNode[r - 1][c + 1] = "$r $c";
-          }
-          // bottom [r + 1][c + 1]
-          if (status[r + 1][c + 1] != unused &&
-              value[r][c + 1] + value[r + 1][c + 1] < min) {
-            min = value[r][c + 1] + value[r + 1][c + 1];
-            parentNode[r + 1][c + 1] = "$r $c";
-          }
-          value[r][c + 1] = min;
-          status[r][c + 1] = open;
-          color[r][c + 1] = border;
-          if (endPosition![0] == r && endPosition![1] == c + 1) {
-            arrived = true;
-          }
-          if (c + 1 != col) {
-            tmpopens.add([r, c + 1]);
-          }
+        else if (status[r][c + 1] != unused &&
+            value[r][c + 1] + increase < min) {
+          min = value[r][c + 1] + increase;
         }
         // left main [r][c - 1]
-        if (status[r][c - 1] == unused && c - 1 - 1 != 0) {
-          int min = infinity;
-          // left [r][c - 1 - 1]
-          if (status[r][c - 1 - 1] != unused &&
-              value[r][c - 1] + value[r][c - 1 - 1] < min) {
-            min = value[r][c - 1] + value[r][c - 1 - 1];
-            parentNode[r][c - 1 - 1] = "$r $c";
-          }
-          // upper [r - 1][c - 1]
-          if (status[r - 1][c - 1] != unused &&
-              value[r][c - 1] + value[r - 1][c - 1] < min) {
-            min = value[r][c - 1] + value[r - 1][c - 1];
-            parentNode[r - 1][c - 1] = "$r $c";
-          }
-          // bottom [r + 1][c - 1]
-          if (status[r + 1][c - 1] != unused &&
-              value[r][c - 1] + value[r + 1][c - 1] < min) {
-            min = value[r][c - 1] + value[r + 1][c - 1];
-            parentNode[r + 1][c - 1] = "$r $c";
-          }
-          value[r][c - 1] = min;
-          status[r][c - 1] = open;
-          color[r][c - 1] = border;
-          if (endPosition![0] == r && endPosition![1] == c - 1) {
-            arrived = true;
-          }
-          if (c - 1 != -1) {
-            tmpopens.add([r, c - 1]);
-          }
+        else if (status[r][c - 1] != unused &&
+            value[r][c - 1] + increase < min) {
+          min = value[r][c - 1] + increase;
         }
-        color[r][c] = fill;
+        // if start node
+        else if (status[r][c + 1] == unused &&
+            status[r][c - 1] == unused &&
+            status[r + 1][c] == unused &&
+            status[r - 1][c] == unused) {
+          min = 0;
+          tmpopens.add([r - 1, c]);
+          status[r - 1][c] = open;
+          color[r - 1][c] = Node.border;
+
+          tmpopens.add([r + 1, c]);
+          status[r + 1][c] = open;
+          color[r + 1][c] = Node.border;
+
+          tmpopens.add([r, c + 1]);
+          status[r][c + 1] = open;
+          color[r][c + 1] = Node.border;
+
+          tmpopens.add([r, c - 1]);
+          status[r][c - 1] = open;
+          color[r][c - 1] = Node.border;
+          parentNode[r - 1][c] = "$r,$c";
+          parentNode[r][c - 1] = "$r,$c";
+          parentNode[r][c + 1] = "$r,$c";
+        }
+        // Create Open Node..
+        if (status[r - 1][c] == unused) {
+          status[r - 1][c] = open;
+          color[r - 1][c] = Node.border;
+          tmpopens.add([r - 1, c]);
+          parentNode[r - 1][c] = "$r,$c";
+        }
+        if (status[r + 1][c] == unused) {
+          tmpopens.add([r + 1, c]);
+          parentNode[r + 1][c] = "$r,$c";
+          color[r + 1][c] = Node.border;
+          status[r + 1][c] = open;
+        }
+        if (status[r][c + 1] == unused) {
+          tmpopens.add([r, c + 1]);
+          color[r][c + 1] = Node.border;
+          status[r][c + 1] = open;
+          parentNode[r][c + 1] = "$r,$c";
+        }
+        if (status[r][c - 1] == unused) {
+          tmpopens.add([r, c - 1]);
+          color[r][c - 1] = Node.border;
+          status[r][c - 1] = open;
+          parentNode[r][c - 1] = "$r,$c";
+        }
+        value[r][c] = min;
+        color[r][c] = Node.fill;
+        status[r][c] = closed;
         print(arrived);
         await Future.delayed(Duration(microseconds: 100));
         setState(() {});
-      }
+      } // fro
 
-      opens = tmpopens;
-    }
+      opens = tmpopens.toSet().toList();
+    } // while
 
     // print(opens);
   }
@@ -286,30 +244,31 @@ class _HomeState extends State<Home> {
                         GestureDetector(
                           onTap: () {
                             if (currentButton == start && !st) {
-                              color[i][j] = Colors.green;
+                              color[i][j] = Node.start;
                               opens.add([i, j]);
                               value[i][j] = 0;
                               st = true;
                             }
                             if (currentButton == end && !e) {
-                              color[i][j] = Colors.red;
+                              color[i][j] = Node.end;
                               endPosition = [i, j];
                               print(endPosition);
                               e = true;
                             }
                             if (currentButton == barrier) {
-                              color[i][j] = Colors.blue;
+                              color[i][j] = Node.barrier;
+                              barrierList.add([i,j]);
                             }
                             setState(() {});
                           },
                           child: Container(
-                            height: 20,
-                            width: 20,
+                            height: 25,
+                            width: 25,
                             decoration: BoxDecoration(
                                 color: color[i][j],
                                 border: Border.all(
                                     color: Colors.black12, width: 1)),
-                            child: Text(value[i][j].toString()),
+                            child: Text(parentNode[i][j].toString()),
                           ),
                         ),
                       ]
