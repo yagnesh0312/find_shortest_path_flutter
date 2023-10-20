@@ -268,7 +268,7 @@ class _HomeState extends State<Home> {
                                 color: color[i][j],
                                 border: Border.all(
                                     color: Colors.black12, width: 1)),
-                            child: Text(parentNode[i][j].toString()),
+                            // child: Text(parentNode[i][j].toString()),
                           ),
                         ),
                       ]
