@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
-
   @override
   State<Home> createState() => _HomeState();
 }
@@ -12,7 +11,8 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   int row = 32;
   int col = 50;
-  final increase = 1;
+  final increase = 10;
+  final increaseDy = 14;
   final infinity = 99999;
   final start = "start";
   final end = "end";
@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
   var parentNode;
   var status;
   late List<List<int>> opens;
-  late List<int> startPostion;
+  late List<int> startPosition;
 
   late List<List<int>> barrierList;
   List<int>? endPosition;
@@ -36,7 +36,7 @@ class _HomeState extends State<Home> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    startPostion = [];
+    startPosition = [];
     value = List<List>.generate(row,
         (i) => List<int>.generate(col, (index) => infinity, growable: false),
         growable: false);
@@ -75,8 +75,7 @@ class _HomeState extends State<Home> {
           break;
         }
         int min = infinity;
-        // edited here
-        // set open Value
+        // ? set open Value
         // upper main [r - 1][c]
         // print(status[r - 1][c]);
         if (r - 1 != -1 &&
@@ -86,100 +85,183 @@ class _HomeState extends State<Home> {
           min = value[r - 1][c] + increase;
         }
         // bottom main [r + 1][c]
-        else if (r + 1 != row &&
+        if (r + 1 != row &&
             status[r + 1][c] != unused &&
             value[r + 1][c] + increase < min) {
-          print("bottom");
+          // print("bottom");
           min = value[r + 1][c] + increase;
         }
         // Right main [r][c + 1]
-        else if (c + 1 != col &&
+        if (c + 1 != col &&
             status[r][c + 1] != unused &&
             value[r][c + 1] + increase < min) {
           min = value[r][c + 1] + increase;
         }
         // left main [r][c - 1]
-        else if (c - 1 != -1 &&
+        if (c - 1 != -1 &&
             status[r][c - 1] != unused &&
             value[r][c - 1] + increase < min) {
           min = value[r][c - 1] + increase;
         }
+        // ?
+        // upper left [r-1][c-1]
+        if (r - 1 != -1 &&
+            c - 1 != -1 &&
+            status[r - 1][c - 1] != unused &&
+            value[r - 1][c - 1] + increaseDy < min) {
+          min = value[r - 1][c - 1] + increaseDy;
+        }
+        // upper right [r-1][c+1]
+        if (r - 1 != -1 &&
+            c + 1 != col &&
+            status[r - 1][c + 1] != unused &&
+            value[r - 1][c + 1] + increaseDy < min) {
+          min = value[r - 1][c + 1] + increaseDy;
+        }
+        // bottom left [r+1][c-1]
+        if (r + 1 != row &&
+            c - 1 != -1 &&
+            status[r + 1][c - 1] != unused &&
+            value[r + 1][c - 1] + increaseDy < min) {
+          min = value[r + 1][c - 1] + increaseDy;
+        }
+        // bottom right [r+1][c+1]
+        if (r + 1 != row &&
+            c + 1 != col &&
+            status[r + 1][c + 1] != unused &&
+            value[r + 1][c + 1] + increaseDy < min) {
+          min = value[r + 1][c + 1] + increaseDy;
+        }
+
         // if start node
-        else if (status[r][c + 1] == unused &&
+        if (status[r][c + 1] == unused &&
             status[r][c - 1] == unused &&
             status[r + 1][c] == unused &&
-            status[r - 1][c] == unused) {
+            status[r - 1][c] == unused &&
+            status[r + 1][c + 1] == unused &&
+            status[r - 1][c - 1] == unused &&
+            status[r + 1][c - 1] == unused &&
+            status[r - 1][c + 1] == unused) {
           min = 0;
           tmpopens.add([r - 1, c]);
           status[r - 1][c] = open;
           color[r - 1][c] = Node.border;
-
           tmpopens.add([r + 1, c]);
           status[r + 1][c] = open;
           color[r + 1][c] = Node.border;
-
           tmpopens.add([r, c + 1]);
           status[r][c + 1] = open;
           color[r][c + 1] = Node.border;
-
           tmpopens.add([r, c - 1]);
           status[r][c - 1] = open;
           color[r][c - 1] = Node.border;
-          parentNode[r - 1][c] = [r, c];
+          //
+          tmpopens.add([r - 1, c - 1]);
+          status[r - 1][c - 1] = open;
+          color[r - 1][c - 1] = Node.border;
+          tmpopens.add([r + 1, c - 1]);
+          status[r + 1][c - 1] = open;
+          color[r + 1][c - 1] = Node.border;
+          tmpopens.add([r - 1, c + 1]);
+          status[r - 1][c + 1] = open;
+          color[r - 1][c + 1] = Node.border;
+          tmpopens.add([r + 1, c + 1]);
+          status[r + 1][c + 1] = open;
+          color[r + 1][c + 1] = Node.border;
+
+          parentNode[r - 1][c - 1] = [r, c];
+          parentNode[r + 1][c - 1] = [r, c];
+          parentNode[r + 1][c + 1] = [r, c];
+          parentNode[r - 1][c + 1] = [r, c];
+
           parentNode[r][c - 1] = [r, c];
           parentNode[r][c + 1] = [r, c];
           parentNode[r + 1][c] = [r, c];
+          parentNode[r - 1][c] = [r, c];
         }
-        // Create Open Node..
+        // ? Create Open Node..
         if (r - 1 != -1 && status[r - 1][c] == unused) {
           status[r - 1][c] = open;
           color[r - 1][c] = Node.border;
           tmpopens.add([r - 1, c]);
           parentNode[r - 1][c] = [r, c];
         }
+
         if (r + 1 != row && status[r + 1][c] == unused) {
           tmpopens.add([r + 1, c]);
           parentNode[r + 1][c] = [r, c];
           color[r + 1][c] = Node.border;
           status[r + 1][c] = open;
         }
+
         if (c + 1 != col && status[r][c + 1] == unused) {
           tmpopens.add([r, c + 1]);
           color[r][c + 1] = Node.border;
           status[r][c + 1] = open;
           parentNode[r][c + 1] = [r, c];
         }
+
         if (c - 1 != -1 && status[r][c - 1] == unused) {
           tmpopens.add([r, c - 1]);
           color[r][c - 1] = Node.border;
           status[r][c - 1] = open;
           parentNode[r][c - 1] = [r, c];
         }
+        // dy
+        // upper left [r-1][c-1]
+        if (r - 1 != -1 && c - 1 != -1 && status[r - 1][c - 1] == unused) {
+          status[r - 1][c - 1] = open;
+          color[r - 1][c - 1] = Node.border;
+          tmpopens.add([r - 1, c - 1]);
+          parentNode[r - 1][c - 1] = [r, c];
+        }
+        // upper right [r-1][c+1]
+        if (r - 1 != -1 && c + 1 != col && status[r - 1][c + 1] == unused) {
+          status[r - 1][c + 1] = open;
+          color[r - 1][c + 1] = Node.border;
+          tmpopens.add([r - 1, c + 1]);
+          parentNode[r - 1][c + 1] = [r, c];
+        }
+        // bottom left [r+1][c-1]
+        if (r + 1 != row && c - 1 != -1 && status[r + 1][c - 1] == unused) {
+          status[r + 1][c - 1] = open;
+          color[r + 1][c - 1] = Node.border;
+          tmpopens.add([r + 1, c - 1]);
+          parentNode[r + 1][c - 1] = [r, c];
+        }
+        // bottom right [r+1][c+1]
+        if (r + 1 != row && c + 1 != col && status[r + 1][c + 1] == unused) {
+          status[r + 1][c + 1] = open;
+          color[r + 1][c + 1] = Node.border;
+          tmpopens.add([r + 1, c + 1]);
+          parentNode[r + 1][c + 1] = [r, c];
+        }
+
         value[r][c] = min;
         color[r][c] = Node.fill;
         status[r][c] = closed;
         print(arrived);
-        // await Future.delayed(Duration(microseconds: 100));
-        // setState(() {});
-      } // fro
-
+        // for visual
+        await Future.delayed(Duration(microseconds: 500));
+        setState(() {});
+      }
       opens = tmpopens.toSet().toList();
     } // while
     int rr = endPosition![0];
     int cc = endPosition![1];
     color[rr][cc] = Node.path;
-    color[startPostion[0]][startPostion[1]] = Node.path;
+    color[startPosition[0]][startPosition[1]] = Node.path;
     int rrr = 0;
     int ccc = 0;
     rr = parentNode[rr][cc][0];
     cc = parentNode[rr][cc][1];
-    for (var i = 0; !(startPostion[0] == rr && startPostion[1] == cc); i++) {
+    for (var i = 0; !(startPosition[0] == rr && startPosition[1] == cc); i++) {
       color[rr][cc] = Node.path;
       rrr = rr;
       ccc = cc;
       rr = parentNode[rrr][ccc][0];
       cc = parentNode[rrr][ccc][1];
-      // await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(Duration(milliseconds: 100));
       setState(() {});
     }
 
@@ -270,8 +352,8 @@ class _HomeState extends State<Home> {
                           onTap: () {
                             if (currentButton == start && !st) {
                               color[i][j] = Node.start;
-                              startPostion.add(i);
-                              startPostion.add(j);
+                              startPosition.add(i);
+                              startPosition.add(j);
                               opens.add([i, j]);
                               value[i][j] = 0;
                               st = true;
@@ -289,15 +371,14 @@ class _HomeState extends State<Home> {
                             setState(() {});
                           },
                           child: Container(
-                            height: 25,
-                            width: 25,
+                            height: 30,
+                            width: 30,
                             decoration: BoxDecoration(
                               color: color[i][j],
                               // border: Border.all(
                               //     color: Colors.black12, width: 1)
                             ),
-                            // child:
-                            //     Text("$i,$j\n" + parentNode[i][j].toString()),
+                            child: Text(value[i][j].toString()),
                           ),
                         ),
                       ]

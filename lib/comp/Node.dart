@@ -8,3 +8,5 @@ class Node {
   static Color barrier = Colors.brown;
   static Color path = Colors.blue;
 }
+
+
