@@ -7,6 +7,8 @@ class Node {
   static Color end = Colors.red[300]!;
   static Color barrier = Colors.brown;
   static Color path = Colors.blue;
+  static Color close = Colors.grey;
+  static Color nevbar = Colors.purple;
 }
 
 

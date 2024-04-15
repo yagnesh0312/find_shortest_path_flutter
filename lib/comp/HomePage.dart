@@ -21,6 +21,7 @@ class _HomeState extends State<Home> {
   final closed = "closed";
   final unused = "unused";
   var currentButton = "";
+  var time = "";
   var value;
   bool st = false;
   bool e = false;
@@ -57,13 +58,15 @@ class _HomeState extends State<Home> {
   }
 
   void play() async {
+    bool isAvailable = true;
     if (endPosition == null) {
       return;
     }
     int r, c;
     late List<List<int>> tmpopens = [];
     bool arrived = false;
-    while (!arrived) {
+    DateTime strt = DateTime.now();
+    while (!arrived && isAvailable) {
       tmpopens = [];
       // print("not Arrived");
       for (var i = 0; i < opens.length; i++) {
@@ -72,7 +75,6 @@ class _HomeState extends State<Home> {
         print("$r = ${endPosition![0]} and $c = ${endPosition![1]}");
         if (r == endPosition![0] && c == endPosition![1]) {
           arrived = true;
-          break;
         }
         int min = infinity;
         // ? set open Value
@@ -81,7 +83,7 @@ class _HomeState extends State<Home> {
         if (r - 1 != -1 &&
             status[r - 1][c] != unused &&
             value[r - 1][c] + increase < min) {
-          print("upper");
+          // print("upper");
           min = value[r - 1][c] + increase;
         }
         // bottom main [r + 1][c]
@@ -134,6 +136,7 @@ class _HomeState extends State<Home> {
         }
 
         // if start node
+
         if (status[r][c + 1] == unused &&
             status[r][c - 1] == unused &&
             status[r + 1][c] == unused &&
@@ -240,13 +243,33 @@ class _HomeState extends State<Home> {
         value[r][c] = min;
         color[r][c] = Node.fill;
         status[r][c] = closed;
-        print(arrived);
+        if (r == endPosition![0] && c == endPosition![1]) {
+          arrived = true;
+          break;
+        }
+        // print(arrived);
+
         // for visual
         await Future.delayed(Duration(microseconds: 500));
-        setState(() {});
       }
+      if (tmpopens.isEmpty) {
+        isAvailable = false;
+        break;
+      }
+
       opens = tmpopens.toSet().toList();
     } // while
+    setState(() {});
+    if (!isAvailable) {
+      showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+                content: Container(
+                  child: Text("No possible path found!!"),
+                ),
+              ));
+      return;
+    }
     int rr = endPosition![0];
     int cc = endPosition![1];
     color[rr][cc] = Node.path;
@@ -261,10 +284,13 @@ class _HomeState extends State<Home> {
       ccc = cc;
       rr = parentNode[rrr][ccc][0];
       cc = parentNode[rrr][ccc][1];
-      await Future.delayed(Duration(milliseconds: 100));
-      setState(() {});
+      // await Future.delayed(Duration(milliseconds: 100));
+      // setState(() {});
     }
-
+    DateTime en = DateTime.now();
+    var dif = en.difference(strt);
+    time = dif.inMilliseconds.toString();
+    setState(() {});
     // print(opens);
   }
 
@@ -272,6 +298,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+      backgroundColor: Node.nevbar,
         toolbarHeight: 100,
         centerTitle: true,
         title: Row(
@@ -281,7 +308,7 @@ class _HomeState extends State<Home> {
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   decoration: BoxDecoration(
-                      color: Colors.green[300],
+                      color: Node.start,
                       borderRadius: BorderRadius.circular(10)),
                   child: Text(
                     "Start",
@@ -295,7 +322,7 @@ class _HomeState extends State<Home> {
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   decoration: BoxDecoration(
-                      color: Colors.red[300],
+                      color: Node.end,
                       borderRadius: BorderRadius.circular(10)),
                   child: Text(
                     "End",
@@ -309,7 +336,7 @@ class _HomeState extends State<Home> {
                 child: Container(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
                   decoration: BoxDecoration(
-                      color: Colors.black87,
+                      color: Node.barrier,
                       borderRadius: BorderRadius.circular(10)),
                   child: Text(
                     "Barrier",
@@ -333,6 +360,7 @@ class _HomeState extends State<Home> {
                 onPressed: () {
                   play();
                 }),
+            time != "" ? Text("Time: " + time+" ms") : Container(),
           ],
         ),
       ),
@@ -371,14 +399,16 @@ class _HomeState extends State<Home> {
                             setState(() {});
                           },
                           child: Container(
-                            height: 30,
-                            width: 30,
+                            alignment: Alignment.center,
+                            height: 40,
+                            width: 40,
                             decoration: BoxDecoration(
-                              color: color[i][j],
-                              // border: Border.all(
-                              //     color: Colors.black12, width: 1)
-                            ),
-                            child: Text(value[i][j].toString()),
+                                color: color[i][j],
+                                border: Border.all(
+                                    color: Colors.black12, width: 1)),
+                            child: Text(value[i][j] == infinity
+                                ? "∞"
+                                : value[i][j].toString()),
                           ),
                         ),
                       ]
