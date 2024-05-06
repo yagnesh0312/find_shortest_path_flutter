@@ -1,6 +1,7 @@
 import 'package:find_shortest_path/comp/Node.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -9,8 +10,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  int row = 32;
-  int col = 50;
+  int row = 25;
+  int col = 40;
   final increase = 10;
   final increaseDy = 14;
   final infinity = 99999;
@@ -43,9 +44,8 @@ class _HomeState extends State<Home> {
         growable: false);
     color = List<List>.generate(
         row,
-        (i) => List<Color>.generate(
-            col, (index) => Colors.grey.withOpacity(0.3),
-            growable: false),
+        (i) =>
+            List<Color>.generate(col, (index) => Colors.black, growable: false),
         growable: false);
     parentNode = List<List>.generate(
         row, (i) => List<List>.generate(col, (index) => [], growable: false),
@@ -55,6 +55,24 @@ class _HomeState extends State<Home> {
         growable: false);
     opens = [];
     barrierList = [];
+  }
+
+  void clear() {
+    st = false;
+    e = false;
+    opens= [];
+    barrierList = [];
+    startPosition = [];
+
+    for (var i = 0; i < row; i++) {
+      for (var j = 0; j < col; j++) {
+        value[i][j] = infinity;
+        color[i][j] = Colors.black;
+        parentNode[i][j] = [];
+        status[i][j] = unused;
+      }
+    }
+    setState(() {});
   }
 
   void play() async {
@@ -67,6 +85,8 @@ class _HomeState extends State<Home> {
     bool arrived = false;
     DateTime strt = DateTime.now();
     while (!arrived && isAvailable) {
+      color[startPosition[0]][startPosition[1]] = Colors.green;
+
       tmpopens = [];
       // print("not Arrived");
       for (var i = 0; i < opens.length; i++) {
@@ -250,7 +270,8 @@ class _HomeState extends State<Home> {
         // print(arrived);
 
         // for visual
-        await Future.delayed(Duration(microseconds: 500));
+        setState(() {});
+        await Future.delayed(Duration(milliseconds: 1));
       }
       if (tmpopens.isEmpty) {
         isAvailable = false;
@@ -284,8 +305,8 @@ class _HomeState extends State<Home> {
       ccc = cc;
       rr = parentNode[rrr][ccc][0];
       cc = parentNode[rrr][ccc][1];
-      // await Future.delayed(Duration(milliseconds: 100));
-      // setState(() {});
+      await Future.delayed(Duration(milliseconds: 100));
+      setState(() {});
     }
     DateTime en = DateTime.now();
     var dif = en.difference(strt);
@@ -298,124 +319,217 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-      backgroundColor: Node.nevbar,
-        toolbarHeight: 100,
+        backgroundColor: const Color.fromARGB(255, 24, 24, 24),
+        toolbarHeight: 150,
         centerTitle: true,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
+        title: Column(
           children: [
-            CupertinoButton(
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: BoxDecoration(
-                      color: Node.start,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Text(
-                    "Start",
-                    style: TextStyle(color: Colors.black),
+            SizedBox(height: 30),
+            Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    "Dijkstra's algorithm Visualizer",
+                    style: TextStyle(
+                        shadows: [Shadow(color: Colors.white, blurRadius: 40)],
+                        color: Colors.white,
+                        fontSize: 35,
+                        fontWeight: FontWeight.w700),
                   ),
-                ),
-                onPressed: () {
-                  currentButton = "start";
-                }),
-            CupertinoButton(
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: BoxDecoration(
-                      color: Node.end,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Text(
-                    "End",
-                    style: TextStyle(color: Colors.black),
+                  SizedBox(width: 20),
+                  Text(
+                    "By Yagnesh Jariwala",
+                    style: TextStyle(
+                        color: Colors.white.withOpacity(0.6), fontSize: 15),
                   ),
-                ),
-                onPressed: () {
-                  currentButton = "end";
-                }),
-            CupertinoButton(
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: BoxDecoration(
-                      color: Node.barrier,
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Text(
-                    "Barrier",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                onPressed: () {
-                  currentButton = "barrier";
-                }),
-            CupertinoButton(
-                child: Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: BoxDecoration(
-                      color: Colors.blue[300],
-                      borderRadius: BorderRadius.circular(10)),
-                  child: Text(
-                    "Play",
-                    style: TextStyle(color: Colors.black),
-                  ),
-                ),
-                onPressed: () {
-                  play();
-                }),
-            time != "" ? Text("Time: " + time+" ms") : Container(),
+                ]),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CupertinoButton(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      decoration: BoxDecoration(
+                          color: Node.start,
+                          border: Border.all(color: Colors.white),
+                          boxShadow: [
+                            BoxShadow(color: Node.start, blurRadius: 40)
+                          ],
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Text(
+                        "Start Node",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, color: Node.startdark),
+                      ),
+                    ),
+                    onPressed: () {
+                      currentButton = "start";
+                    }),
+                CupertinoButton(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                          boxShadow: [
+                            BoxShadow(color: Node.end, blurRadius: 40)
+                          ],
+                          color: Node.end,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Text(
+                        "End Node",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, color: Node.enddark),
+                      ),
+                    ),
+                    onPressed: () {
+                      currentButton = "end";
+                    }),
+                CupertinoButton(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                          color: Node.barrier,
+                          boxShadow: [
+                            BoxShadow(color: Node.barrier, blurRadius: 40)
+                          ],
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Text(
+                        "Barrier Node",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color: Node.barrierdark),
+                      ),
+                    ),
+                    onPressed: () {
+                      currentButton = "barrier";
+                    }),
+                CupertinoButton(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                          boxShadow: [
+                            BoxShadow(color: Node.path, blurRadius: 40)
+                          ],
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Text(
+                        "Play Visualizer",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, color: Colors.white),
+                      ),
+                    ),
+                    onPressed: () {
+                      play();
+                    }),
+                CupertinoButton(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white),
+                          boxShadow: [
+                            BoxShadow(color: Colors.white, blurRadius: 40)
+                          ],
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10)),
+                      child: Text(
+                        "Clear",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w700, color: Colors.black),
+                      ),
+                    ),
+                    onPressed: () {
+                      clear();
+
+                    }),
+
+                // time != "" ? Text("Time: " + time + " ms",style: TextStyle(fontWeight:FontWeight.w800,color: Colors.white),) : Container(),
+              ],
+            ),
           ],
         ),
       ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                for (int i = 0; i < row; i++) ...[
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (int j = 0; j < col; j++) ...[
-                        GestureDetector(
-                          onTap: () {
-                            if (currentButton == start && !st) {
-                              color[i][j] = Node.start;
-                              startPosition.add(i);
-                              startPosition.add(j);
-                              opens.add([i, j]);
-                              value[i][j] = 0;
-                              st = true;
-                            }
-                            if (currentButton == end && !e) {
-                              color[i][j] = Node.end;
-                              endPosition = [i, j];
-                              print(endPosition);
-                              e = true;
-                            }
-                            if (currentButton == barrier) {
-                              color[i][j] = Node.barrier;
-                              status[i][j] = barrier;
-                            }
-                            setState(() {});
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                                color: color[i][j],
-                                border: Border.all(
-                                    color: Colors.black12, width: 1)),
-                            child: Text(value[i][j] == infinity
-                                ? "∞"
-                                : value[i][j].toString()),
-                          ),
-                        ),
-                      ]
+      body: MouseRegion(
+        cursor: SystemMouseCursors.precise,
+        child: Container(
+          child: Center(
+            child: SingleChildScrollView(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    for (int i = 0; i < row; i++) ...[
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          for (int j = 0; j < col; j++) ...[
+                            GestureDetector(
+                              onTap: () {
+                                if (currentButton == start && !st) {
+                                  color[i][j] = Node.start;
+                                  startPosition.add(i);
+                                  startPosition.add(j);
+                                  opens.add([i, j]);
+                                  value[i][j] = 0;
+                                  st = true;
+                                }
+                                if (currentButton == end && !e) {
+                                  color[i][j] = Node.end;
+                                  endPosition = [i, j];
+                                  print(endPosition);
+                                  e = true;
+                                }
+                                if (currentButton == barrier) {
+                                  color[i][j] = Node.barrier;
+                                  status[i][j] = barrier;
+                                }
+                                setState(() {});
+                              },
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 500),
+                                alignment: Alignment.center,
+                                height: 40,
+                                width: 40,
+                                decoration: BoxDecoration(
+                                    // shape: value[i][j] == infinity ? BoxShape.circle:BoxShape.rectangle,
+                                    color: color[i][j],
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: color[i][j],
+                                        blurRadius: 10,
+                                        // blurStyle: BlurStyle.inner
+                                        // offset: Offset(10, 10)
+                                      )
+                                    ],
+                                    border: Border.all(
+                                        color: Colors.white10, width: 1)),
+                                child: Text(
+                                  value[i][j] == infinity
+                                      ? "∞"
+                                      : value[i][j].toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      color: value[i][j] == infinity
+                                          ? Colors.white
+                                          : Colors.white70),
+                                ),
+                              ),
+                            ),
+                          ]
+                        ],
+                      )
                     ],
-                  )
-                ],
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
         ),
