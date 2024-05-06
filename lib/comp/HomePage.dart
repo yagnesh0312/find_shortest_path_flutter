@@ -60,7 +60,7 @@ class _HomeState extends State<Home> {
   void clear() {
     st = false;
     e = false;
-    opens= [];
+    opens = [];
     barrierList = [];
     startPosition = [];
 
@@ -447,7 +447,6 @@ class _HomeState extends State<Home> {
                     ),
                     onPressed: () {
                       clear();
-
                     }),
 
                 // time != "" ? Text("Time: " + time + " ms",style: TextStyle(fontWeight:FontWeight.w800,color: Colors.white),) : Container(),

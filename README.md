@@ -23,7 +23,9 @@ Write about 1-2 paragraphs describing the purpose of your bot.
 
 ## 🎥 Demo  <a name = "demo"></a>
 
-![Working](https://github.com/yagnesh0312/find_shortest_path_flutter/blob/main/lib/abc.jpg?raw=true)
+![Watch the video](/image/image.png)
+### GIF
+![Watch the video](/image/video.gif)
 
 ## 💭 How it works <a name = "working"></a>
 Dijkstra's algorithm is a graph algorithm that finds the shortest path between two nodes in a graph. It works by maintaining a set of nodes that have been visited, and a set of nodes that have not been visited. The algorithm repeatedly expands the set of visited nodes by choosing the node with the lowest cost, and adding its neighbors to the set of visited nodes. The algorithm terminates when the destination node is reached.
